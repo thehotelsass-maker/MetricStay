@@ -1,0 +1,99 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import { Reveal } from '@/components/ui/motion';
+import { useLang } from '@/lib/i18n';
+
+const TXT = {
+  uz: {
+    title: "Ko'p so'raladigan savollar",
+    faqs: [
+      { question: "Narxlarni yangilash uchun PMS ga ulanish shartmi?", answer: "Yo'q, shart emas — hozirda umuman kerak emas. Tizim internetdagi ochiq manbalardan (Booking, Expedia, Agoda va h.k.) ma'lumotlarni o'zi yig'adi va tahlil qiladi. PMS integratsiyasi (TravelLine, Opera) hali tayyor emas — u ustida ish olib borilmoqda. Narx tavsiyalarini hozircha o'zingiz OTA kabinetida qo'llaysiz." },
+      { question: "Tizim qancha tilda ishlaydi?", answer: "MetricStay interfeysi uchta tilda: O'zbek, Rus va Ingliz tillarida to'liq ishlaydi. Bundan tashqari, Mehmonxona QR xizmatida mijozlarning sharhlari avtomatik ravishda sizning tilingizga tarjima qilib beriladi." },
+      { question: "Bepul sinov muddati qanday ishlaydi?", answer: "Bizda vaqt bilan chegaralangan sinov muddati yo'q, uning o'rniga doimiy 'Bepul' rejamiz bor. Ro'yxatdan o'tib, 1 ta mehmonxona va 1 ta raqibni umrbod bepul kuzatishingiz mumkin — tizim qanday ishlashini ko'rish uchun yetarli. Ko'proq raqib uchun Starter (3 ta) yoki Pro (10 ta) tarifi kerak." },
+      { question: "Raqobatchi mehmonxonalar qanday aniqlanadi?", answer: "Tizim sizning mehmonxonangiz koordinatalari (karta) asosida 300 metrdan 5 km radiusgacha bo'lgan barcha yaqin mehmonxonalarni avtomatik topadi va sizga ro'yxatini taqdim etadi." },
+    ],
+  },
+  ru: {
+    title: 'Часто задаваемые вопросы',
+    faqs: [
+      { question: 'Обязательно ли подключаться к PMS для обновления цен?', answer: 'Нет — сейчас это вообще не требуется. Система сама собирает и анализирует данные из открытых источников (Booking, Expedia, Agoda и др.). Интеграция с PMS (TravelLine, Opera) пока не готова и находится в разработке. Рекомендации по ценам вы применяете сами в кабинете OTA.' },
+      { question: 'На скольких языках работает система?', answer: 'Интерфейс MetricStay полностью работает на трёх языках: узбекском, русском и английском. Кроме того, в QR-сервисе отеля отзывы гостей автоматически переводятся на ваш язык.' },
+      { question: 'Как работает бесплатный пробный период?', answer: "У нас нет ограниченного по времени пробного периода — вместо него есть постоянный тариф «Бесплатный». Зарегистрировавшись, вы можете бессрочно отслеживать 1 отель и 1 конкурента — этого достаточно, чтобы увидеть, как работает система. Для большего числа конкурентов нужен тариф Starter (3) или Pro (10)." },
+      { question: 'Как определяются отели-конкуренты?', answer: 'Система по координатам вашего отеля (на карте) автоматически находит все ближайшие отели в радиусе от 300 метров до 5 км и предоставляет вам список.' },
+    ],
+  },
+  en: {
+    title: 'Frequently asked questions',
+    faqs: [
+      { question: 'Do I need to connect a PMS to update prices?', answer: 'No — right now it is not possible at all. The system collects and analyzes data from public sources (Booking, Expedia, Agoda, etc.) on its own. PMS integration (TravelLine, Opera) is still in development. For now you apply the price recommendations yourself in your OTA extranet.' },
+      { question: 'How many languages does the system support?', answer: 'The MetricStay interface fully works in three languages: Uzbek, Russian and English. In addition, guest reviews in the hotel QR service are automatically translated into your language.' },
+      { question: 'How does the free trial work?', answer: "There is no time-limited trial — instead we have a permanent Free plan. After signing up you can track 1 hotel and 1 competitor forever, free of charge — enough to see how the system works. For more competitors you need Starter (3) or Pro (10)." },
+      { question: 'How are competitor hotels detected?', answer: 'Based on your hotel coordinates (map), the system automatically finds all nearby hotels within a 300 m to 5 km radius and gives you the list.' },
+    ],
+  },
+};
+
+export function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState(0);
+  const lang = useLang((s) => s.lang);
+  const tx = TXT[lang] || TXT.en;
+  const faqs = tx.faqs;
+
+  return (
+    <section className="py-24 border-t bg-background relative">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Reveal className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-[11px] font-semibold uppercase tracking-wider text-primary mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
+            FAQ
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            {tx.title}
+          </h2>
+        </Reveal>
+
+        <div className="space-y-4">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <Reveal key={index} delay={index * 0.1}>
+                <div 
+                  className={`border rounded-2xl overflow-hidden transition-colors duration-300 ${isOpen ? 'bg-muted/30 border-primary/20' : 'bg-card hover:border-border/80'}`}
+                >
+                  <button
+                    onClick={() => setOpenIndex(isOpen ? -1 : index)}
+                    className="w-full text-left px-6 py-5 flex items-center justify-between focus:outline-none"
+                  >
+                    <span className="font-semibold text-foreground pr-8">{faq.question}</span>
+                    <motion.div
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed">
+                          {faq.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
